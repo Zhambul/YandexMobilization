@@ -1,6 +1,6 @@
 package com.example.yandexmobilization.data.database;
 
-import com.example.domainandroid.entity.Artist;
+import com.example.yandexmobilization.data.mapper.ArtistMapper;
 
 import java.util.List;
 
@@ -11,22 +11,17 @@ import rx.Observable;
  */
 public class DataBaseHelper {
 
-    private boolean hasData;
-    private Observable<List<Artist>> cache;
-
     public boolean hasData() {
-        return hasData;
-    }
-    public void setHasData(boolean hasData) {
-        this.hasData = hasData;
+        return ArtistMapper.listAll(ArtistMapper.class).size() != 0;
     }
 
-    public Observable<List<Artist>> getArtists() {
-        return cache;
+    public Observable<List<ArtistMapper>> getArtists() {
+        return Observable.just(ArtistMapper.listAll(ArtistMapper.class));
     }
 
-    public Observable<List<Artist>>  saveArtists(List<Artist> artists) {
-        this.cache = Observable.just(artists);
-        return cache;
+    public void saveArtists(List<ArtistMapper> artists) {
+        for (ArtistMapper artist : artists) {
+            artist.save();
+        }
     }
 }

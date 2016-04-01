@@ -1,12 +1,13 @@
-package com.example.domainandroid.entity;
+package com.example.yandexmobilization.domain.model;
 
 import java.util.List;
 
 /**
  * Created by Жамбыл on 3/30/2016.
  */
-public class Artist implements Entity {
-    private int id;
+public class Artist {
+
+    private Long id;
     private String name;
     private int tracks;
     private int albumsAmount;
@@ -17,11 +18,11 @@ public class Artist implements Entity {
     private String smallCover;
     private String bigCover;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

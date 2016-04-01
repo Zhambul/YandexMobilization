@@ -1,4 +1,4 @@
-package com.example.yandexmobilization.data;
+package com.example.yandexmobilization.domain;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -1,30 +1,32 @@
 package com.example.yandexmobilization.data.repository;
 
-import com.example.domainandroid.entity.Artist;
+import android.content.Context;
+import android.test.mock.MockContext;
+
 import com.example.yandexmobilization.data.database.DataBaseHelper;
 import com.example.yandexmobilization.data.deserialization.ArtistsDeserializer;
+import com.example.yandexmobilization.data.mapper.ArtistConverter;
+import com.example.yandexmobilization.data.mapper.ArtistMapper;
 import com.example.yandexmobilization.data.net.RestAPI;
 import com.example.yandexmobilization.data.net.ServerHelper;
+import com.example.yandexmobilization.domain.model.Artist;
+
 
 import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +38,7 @@ public class ArtistRepositoryImplTest {
     private ArtistRepositoryImpl artistRepository;
     private ServerHelper serverHelper;
     private DataBaseHelper dataBaseHelper;
+    private ArtistConverter artistConverter;
 
     @Before
     public void init() {
@@ -43,7 +46,8 @@ public class ArtistRepositoryImplTest {
         ArtistsDeserializer artistsDeserializer = new ArtistsDeserializer();
         serverHelper = new ServerHelper(restAPI, artistsDeserializer);
         dataBaseHelper = new DataBaseHelper();
-        artistRepository = new ArtistRepositoryImpl(serverHelper, dataBaseHelper);
+        artistConverter = new ArtistConverter();
+        artistRepository = new ArtistRepositoryImpl(serverHelper, dataBaseHelper, artistConverter);
     }
 
     @Test
@@ -53,20 +57,17 @@ public class ArtistRepositoryImplTest {
     }
 
     @Test
-    public void shouldSaveArtists() {
-        List<Artist> artists = artistRepository.getAll().toBlocking().first();
-
-        assertEquals(artists,dataBaseHelper.getArtists().toBlocking().first());
-    }
-
-    @Test
     public void shouldGiveDataFromDatabaseIsHas() {
         dataBaseHelper = mock(DataBaseHelper.class);
         serverHelper = mock(ServerHelper.class);
         when(dataBaseHelper.hasData()).thenReturn(true);
-        ArtistRepositoryImpl artistRepository = new ArtistRepositoryImpl(serverHelper, dataBaseHelper);
+        List<ArtistMapper> artists = new ArrayList<>();
+        artists.add(new ArtistMapper());
+        when(dataBaseHelper.getArtists()).thenReturn(Observable.just(artists));
 
-        artistRepository.getAll();
+        ArtistRepositoryImpl artistRepository = new ArtistRepositoryImpl(serverHelper, dataBaseHelper, artistConverter);
+
+        artistRepository.getAll().toBlocking().first();
 
         verify(dataBaseHelper).getArtists();
         verify(serverHelper,never()).loadArtists();
@@ -74,22 +75,28 @@ public class ArtistRepositoryImplTest {
 
     @Test
     public void shouldGetDataFromDatabaseAfterGettingFromInternet() {
-        dataBaseHelper = mock(DataBaseHelper.class);
-        when(dataBaseHelper.saveArtists(any())).thenAnswer(invocation -> {
-            Object[] args = invocation.getArguments();
-            return  Observable.just(args[0]);
-        });
+        serverHelper = mock(ServerHelper.class);
+        artistRepository = new ArtistRepositoryImpl(serverHelper,dataBaseHelper, artistConverter);
+        List<ArtistMapper> artists = new ArrayList<>();
+        artists.add(new ArtistMapper());
+        when(serverHelper.loadArtists()).thenReturn(Observable.just(artists));
 
-        ArtistRepositoryImpl artistRepository = new ArtistRepositoryImpl(serverHelper, dataBaseHelper);
+        //database is empty
+        assertEquals(false,dataBaseHelper.hasData());
 
-        List<Artist> artists = artistRepository.getAll().toBlocking().first();
-        verify(dataBaseHelper).hasData();
-        verify(dataBaseHelper).saveArtists(artists);
+        //from internet
+        artistRepository.getAll().toBlocking().first();
+        verify(serverHelper,only()).loadArtists();
+        assertEquals(true,dataBaseHelper.hasData());
+
+        //from database
+        artistRepository.getAll().toBlocking().first();
+        verify(serverHelper,only()).loadArtists();
     }
 
     @Test
     public void shouldGetArtistById() {
-        int id = 1080505;
+        Long id = 1080505l;
         Artist artist = artistRepository.getById(id).toBlocking().first();
         assertNotNull(artist);
         assertEquals(id,artist.getId());

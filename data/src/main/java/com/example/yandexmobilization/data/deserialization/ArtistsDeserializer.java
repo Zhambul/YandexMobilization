@@ -2,7 +2,7 @@ package com.example.yandexmobilization.data.deserialization;
 
 import android.support.annotation.NonNull;
 
-import com.example.domainandroid.entity.Artist;
+import com.example.yandexmobilization.data.mapper.ArtistMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ArtistsDeserializer {
 
-    public List<Artist> deserialize(JsonArray jsonElements){
+    public List<ArtistMapper> deserialize(JsonArray jsonElements){
         if (isInvalidInput(jsonElements)) {
             return new ArrayList<>();
         }
@@ -31,10 +31,10 @@ public class ArtistsDeserializer {
     }
 
     @NonNull
-    private List<Artist> getArtists(JsonArray artistsJsonArray) {
-        List<Artist> artists = new ArrayList<>();
+    private List<ArtistMapper> getArtists(JsonArray artistsJsonArray) {
+        List<ArtistMapper> artists = new ArrayList<>();
         for (JsonElement artistJsonElement : artistsJsonArray) {
-            Artist artist = new Artist();
+            ArtistMapper artist = new ArtistMapper();
             JsonObject artistJsonObject = artistJsonElement.getAsJsonObject();
             setMainData(artist, artistJsonObject);
             setCovers(artist, artistJsonObject);
@@ -45,21 +45,21 @@ public class ArtistsDeserializer {
         return artists;
     }
 
-    private void setMainData(Artist artist, JsonObject artistJsonObject) {
-        artist.setId(artistJsonObject.get("id").getAsInt());
+    private void setMainData(ArtistMapper artist, JsonObject artistJsonObject) {
+        artist.setId(artistJsonObject.get("id").getAsLong());
         artist.setName(artistJsonObject.get("name").getAsString());
         artist.setTracks(artistJsonObject.get("tracks").getAsInt());
         artist.setAlbumsAmount(artistJsonObject.get("albums").getAsInt());
         artist.setDescription(artistJsonObject.get("description").getAsString());
     }
 
-    private void setCovers(Artist artist, JsonObject artistJsonObject) {
+    private void setCovers(ArtistMapper artist, JsonObject artistJsonObject) {
         JsonObject covers = artistJsonObject.get("cover").getAsJsonObject();
         artist.setSmallCover(covers.get("small").getAsString());
         artist.setBigCover(covers.get("big").getAsString());
     }
 
-    private void setGenres(Artist artist, JsonObject artistJsonObject) {
+    private void setGenres(ArtistMapper artist, JsonObject artistJsonObject) {
         List<String> genres = new ArrayList<>();
         for (JsonElement genre : artistJsonObject.get("genres").getAsJsonArray()) {
             genres.add(genre.getAsString());
@@ -68,7 +68,7 @@ public class ArtistsDeserializer {
         artist.setGenres(genres);
     }
 
-    private void setLink(Artist artist, JsonObject artistJsonObject) {
+    private void setLink(ArtistMapper artist, JsonObject artistJsonObject) {
         JsonElement link = artistJsonObject.get("link");
         if(link!=null){
             artist.setLink(link.getAsString());

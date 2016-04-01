@@ -1,4 +1,4 @@
-package com.example.domainandroid;
+package com.example.yandexmobilization.domain;
 
 import org.junit.Test;
 

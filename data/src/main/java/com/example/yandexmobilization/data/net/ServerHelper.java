@@ -1,7 +1,7 @@
 package com.example.yandexmobilization.data.net;
 
-import com.example.domainandroid.entity.Artist;
 import com.example.yandexmobilization.data.deserialization.ArtistsDeserializer;
+import com.example.yandexmobilization.data.mapper.ArtistMapper;
 import com.google.gson.JsonArray;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public class ServerHelper {
         this.artistsDeserializer = artistsDeserializer;
     }
 
-    public Observable<List<Artist>> loadArtists() {
+    public Observable<List<ArtistMapper>> loadArtists() {
         return Observable.create((subscriber)-> {
             JsonArray artists = restAPI.loadArtistsJson().toBlocking().first();
             subscriber.onNext(artistsDeserializer.deserialize(artists));

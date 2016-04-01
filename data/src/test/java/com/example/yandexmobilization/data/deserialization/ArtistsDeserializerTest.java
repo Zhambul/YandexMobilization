@@ -1,6 +1,6 @@
 package com.example.yandexmobilization.data.deserialization;
 
-import com.example.domainandroid.entity.Artist;
+import com.example.yandexmobilization.data.mapper.ArtistMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
@@ -43,7 +43,7 @@ public class ArtistsDeserializerTest {
 
     @Test
     public void shouldDeserializeProperly(){
-        List<Artist> artists = new ArtistsDeserializer().deserialize(dummyJson);
+        List<ArtistMapper> artists = new ArtistsDeserializer().deserialize(dummyJson);
         if(artists.size() == 0) {
             fail();
         }
