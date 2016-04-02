@@ -4,17 +4,21 @@
 
     <application
         android:allowBackup="true"
+        android:name=".presentation.injection.App"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presentation.view.activity.ArtistsListActivity">
+        <activity android:name=".presentation.ui.activity.ArtistsListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".presentation.ui.activity.ArtistsDetailActivity" />
+
     </application>
 
 

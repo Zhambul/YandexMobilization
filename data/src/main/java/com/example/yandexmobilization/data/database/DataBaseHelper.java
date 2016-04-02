@@ -1,6 +1,7 @@
 package com.example.yandexmobilization.data.database;
 
 import com.example.yandexmobilization.data.mapper.ArtistMapper;
+import com.orm.SugarContext;
 
 import java.util.List;
 
@@ -12,7 +13,8 @@ import rx.Observable;
 public class DataBaseHelper {
 
     public boolean hasData() {
-        return ArtistMapper.listAll(ArtistMapper.class).size() != 0;
+        return false;
+//        return ArtistMapper.listAll(ArtistMapper.class).size() != 0;
     }
 
     public Observable<List<ArtistMapper>> getArtists() {
@@ -20,8 +22,13 @@ public class DataBaseHelper {
     }
 
     public void saveArtists(List<ArtistMapper> artists) {
-        for (ArtistMapper artist : artists) {
-            artist.save();
-        }
+//        cleanDataBase();
+//        for (ArtistMapper artist : artists) {
+//            artist.save();
+//        }
+    }
+
+    public void cleanDataBase() {
+        ArtistMapper.deleteAll(ArtistMapper.class);
     }
 }

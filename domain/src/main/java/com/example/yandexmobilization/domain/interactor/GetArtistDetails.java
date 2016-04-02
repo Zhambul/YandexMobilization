@@ -1,5 +1,6 @@
 package com.example.yandexmobilization.domain.interactor;
 
+import com.example.yandexmobilization.domain.model.Artist;
 import com.example.yandexmobilization.domain.repository.ArtistRepository;
 
 
@@ -8,7 +9,7 @@ import rx.Observable;
 /**
  * Created by Жамбыл on 4/1/2016.
  */
-public class GetArtistDetails extends UseCase {
+public class GetArtistDetails extends UseCase<Artist> {
 
     private final ArtistRepository artistRepository;
     private final Long artistId;
